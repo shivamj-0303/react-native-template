@@ -1,0 +1,31 @@
+import { AccessToken, APIResponse } from '../types';
+import { APIService } from './api-service';
+
+export class AccountService extends APIService {
+  getAccount = async (userAccessToken: AccessToken): Promise<APIResponse> => {
+    return this.get(`/accounts/${userAccessToken.accountId}`, {
+      headers: {
+        Authorization: `Bearer ${userAccessToken.token}`,
+      },
+    });
+  };
+
+  updateAccount = async (
+    firstName: string,
+    lastName: string,
+    userAccessToken: AccessToken,
+  ): Promise<APIResponse> => {
+    return this.patch(
+      `/accounts/${userAccessToken.accountId}`,
+      {
+        firstName,
+        lastName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${userAccessToken.token}`,
+        },
+      },
+    );
+  };
+}
