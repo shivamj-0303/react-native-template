@@ -9,11 +9,11 @@ import React, {
 
 import { AuthOptions } from '../constants';
 import { AuthService } from '../services';
-import { PhoneNumber, AccessToken, Nullable } from '../types';
+import { PhoneNumber, AccessToken } from '../types';
 import { useLocalStorage } from '../utils';
 
 interface AuthContextInterface {
-  getAccessTokenFromStorage: () => Nullable<AccessToken>;
+  getAccessToken: () => AccessToken;
   isSendOTPLoading: boolean;
   isUserAuthenticated: boolean;
   isVerifyOTPLoading: boolean;
@@ -35,26 +35,23 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 
   const { getFromStorage, removeFromStorage, setToStorage } = useLocalStorage();
 
-  const getAccessTokenFromStorage = (): Nullable<AccessToken> => {
-    const token = getFromStorage(AuthOptions.AccessTokenStorageKey);
-    if (token) {
-      return JSON.parse(token) as AccessToken;
-    }
-    return null;
+  const getAccessToken = (): AccessToken => {
+    const token = getFromStorage(AuthOptions.AccessTokenStorageKey) as string;
+    return JSON.parse(token) as AccessToken;
   };
 
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState(!!getAccessTokenFromStorage());
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(!!getAccessToken());
 
-  const setAccessTokenToStorage = (token: AccessToken) => {
+  const setAccessToken = (token: AccessToken) => {
     setToStorage(AuthOptions.AccessTokenStorageKey, JSON.stringify(token));
   };
 
-  const clearAccessTokenFromStorage = (): void => {
+  const clearAccessToken = (): void => {
     removeFromStorage(AuthOptions.AccessTokenStorageKey);
   };
 
   const logout = () => {
-    clearAccessTokenFromStorage();
+    clearAccessToken();
     setIsUserAuthenticated(false);
   };
 
@@ -74,7 +71,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 
     if (data) {
       const token = new AccessToken({ ...data });
-      setAccessTokenToStorage(token);
+      setAccessToken(token);
       setIsUserAuthenticated(true);
       setIsVerifyOTPLoading(false);
     } else {
@@ -86,7 +83,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
   return (
     <AuthContext.Provider
       value={{
-        getAccessTokenFromStorage,
+        getAccessToken,
         isSendOTPLoading,
         isUserAuthenticated,
         isVerifyOTPLoading,
