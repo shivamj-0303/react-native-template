@@ -12,3 +12,7 @@ export { default as ParagraphMedium } from './typography/paragraph-medium';
 export { default as ParagraphSmall } from './typography/paragraph-small';
 export { default as FormControl } from './form-control/form-control';
 export { default as Button } from './button/button';
+export { default as Modal } from './modal/modal';
+export { default as ModalBody } from './modal/modal-body.component';
+export { default as ModalFooter } from './modal/modal-footer.component';
+export { default as ModalHeader } from './modal/modal-header.component';
