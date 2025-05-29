@@ -1,7 +1,7 @@
 // Tag.tsx
-import { Box, Text, Pressable, Icon } from 'native-base';
+import Close from 'boilerplate-react-native/assets/icons/close.svg';
+import { Box, Text, Pressable } from 'native-base';
 import React from 'react';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { useTagStyles } from './tag.styles';
 
@@ -37,7 +37,7 @@ export const Tag: React.FC<TagProps> = ({
       <Text style={[styles.text, textStyle]}>{label}</Text>
       {onDeleted && (
         <Pressable onPress={onDeleted} style={styles.iconWrapper} hitSlop={8}>
-          <Icon as={MaterialIcons} name="close" size={4} color={textStyle.color} />
+          <Close width={16} height={16} fill={textStyle.color} />
         </Pressable>
       )}
     </Container>
