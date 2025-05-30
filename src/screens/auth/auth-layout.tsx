@@ -16,12 +16,16 @@ const AuthLayout: React.FC<PropsWithChildren<AuthLayoutProps>> = ({
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} flex={1}>
         <ScrollView _contentContainerStyle={styles.contentContainerStyle} bounces={false}>
-          <Box flex={1} bg={'primary'}>
-            <Box py={'15%'} px={'10%'} fontWeight={'bold'} alignSelf={'flex-start'}>
-              <Heading size="2xl">{primaryTitle}</Heading>
-              <Heading size="2xl">{secondaryTitle}</Heading>
+          <Box flex={1} backgroundColor={'primary.500'}>
+            <Box pt={'10%'} px={'10%'} fontWeight={'bold'} alignSelf={'flex-start'}>
+              <Heading size="3xl" color={'secondary.50'}>
+                {primaryTitle}
+              </Heading>
+              <Heading size="3xl" color={'secondary.50'}>
+                {secondaryTitle}
+              </Heading>
             </Box>
-            <Box py="8" px="10%" w="100%" flex={1} bg={'white'} roundedTop="lg">
+            <Box py="8" px="10%" w="100%" flex={1} bg={'white'} roundedTop={36}>
               {children}
             </Box>
           </Box>

@@ -1,7 +1,8 @@
-import { Box, Button, Heading, Icon, Modal, Text } from 'native-base';
+import DeleteIcon from 'boilerplate-react-native/assets/icons/delete.svg';
+import { Button, Modal } from 'boilerplate-react-native/src/components';
+import { ButtonKind } from 'boilerplate-react-native/src/types/button';
+import { Box, Text, useTheme } from 'native-base';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface AccountDeleteModalProps {
   handleDeleteAccountPress: () => void;
@@ -16,37 +17,39 @@ const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
-  const { height } = useWindowDimensions();
+  const theme = useTheme();
 
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
   return (
-    <Modal _backdrop={{ height }} isOpen={isModalOpen} onClose={handleModalClose}>
-      <Modal.Content>
-        <Modal.Header>
-          <Box flexDirection={'row'} justifyContent={'space-between'}>
-            <Heading>Delete Account</Heading>
-            <Icon size={6} as={<MaterialIcons name="close" />} onPress={handleModalClose} />
-          </Box>
-        </Modal.Header>
-        <Modal.Body>
-          <Text>Are you sure you want to delete your account?</Text>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant={'subtle'} onPress={handleModalClose}>
+    <Modal isModalOpen={isModalOpen} handleModalClose={handleModalClose}>
+      <Modal.Header title="Delete Account" onClose={handleModalClose} />
+      <Modal.Body>
+        <Box alignItems="center">
+          <Text textAlign={'center'}>Are you sure you want to delete your account?</Text>
+        </Box>
+      </Modal.Body>
+      <Modal.Footer>
+        <Box flex={1} mr={2}>
+          <Button onClick={handleModalClose} kind={ButtonKind.SECONDARY}>
             Cancel
           </Button>
+        </Box>
+        <Box flex={1} ml={2}>
           <Button
             isLoading={isDeleteAccountLoading}
-            onPress={handleDeleteAccountPress}
-            variant={'danger'}
+            onClick={handleDeleteAccountPress}
+            kind={ButtonKind.DANGER}
+            startEnhancer={
+              <DeleteIcon width={20} height={20} fill={theme.colors.secondary['50']} />
+            }
           >
             Delete
           </Button>
-        </Modal.Footer>
-      </Modal.Content>
+        </Box>
+      </Modal.Footer>
     </Modal>
   );
 };

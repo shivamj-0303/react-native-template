@@ -1,4 +1,7 @@
-import { Divider, Toast, VStack } from 'native-base';
+import DeleteIcon from 'boilerplate-react-native/assets/icons/delete.svg';
+import LogoutIcon from 'boilerplate-react-native/assets/icons/logout.svg';
+import { Button } from 'boilerplate-react-native/src/components';
+import { Box, Divider, Toast, useTheme, VStack } from 'native-base';
 import React, { useState } from 'react';
 
 import { ProfileStackScreenProps } from '../../../../@types/navigation';
@@ -11,6 +14,8 @@ import ProfileAction from './profile-action';
 import ProfileInfoSection from './profile-info-section';
 
 const Profile: React.FC<ProfileStackScreenProps<'Home'>> = ({ navigation }) => {
+  const theme = useTheme();
+
   const [isAccountDeleteModalOpen, setIsAccountDeleteModalOpen] = useState(false);
 
   const { deleteAccount, isDeleteAccountLoading, accountDetails } = useAccountContext();
@@ -49,14 +54,15 @@ const Profile: React.FC<ProfileStackScreenProps<'Home'>> = ({ navigation }) => {
   return (
     <ProfileLayout>
       <VStack w={'100%'} space={4} divider={<Divider />}>
-        <ProfileInfoSection accountDetails={accountDetails} />
-        <ProfileAction onPress={handleEditProfilePress} title={'Edit Profile'} icon={'edit'} />
+        <ProfileInfoSection
+          accountDetails={accountDetails}
+          handleEditProfilePress={handleEditProfilePress}
+        />
         <ProfileAction
           title={'Delete Account'}
-          icon={'delete'}
+          icon={<DeleteIcon width={20} height={20} fill={theme.colors.primary['500']} />}
           onPress={() => setIsAccountDeleteModalOpen(true)}
         />
-        <ProfileAction title={'Log Out'} icon={'logout'} onPress={logout} />
       </VStack>
 
       <AccountDeleteModal
@@ -65,6 +71,15 @@ const Profile: React.FC<ProfileStackScreenProps<'Home'>> = ({ navigation }) => {
         isModalOpen={isAccountDeleteModalOpen}
         setIsModalOpen={setIsAccountDeleteModalOpen}
       />
+
+      <Box w="50%" alignSelf="center" position="absolute" bottom={4}>
+        <Button
+          onClick={logout}
+          startEnhancer={<LogoutIcon width={20} height={20} fill={theme.colors.secondary['50']} />}
+        >
+          Logout
+        </Button>
+      </Box>
     </ProfileLayout>
   );
 };
