@@ -17,9 +17,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Node Modules
-        run: npm ci
-
+      - name: Install dependencies
+        run: npm install
 
       - name: Setup Node & dependencies
         uses: actions/setup-node@v3
