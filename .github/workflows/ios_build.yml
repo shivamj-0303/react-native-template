@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node & dependencies
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '22.13.1'
 
       - name: Install npm & CocoaPods dependencies
         run: |
