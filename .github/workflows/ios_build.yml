@@ -22,11 +22,18 @@ jobs:
         with:
           node-version: '22.13.1'
 
-      - name: Install npm & CocoaPods dependencies
-        run: |
-          npm install --legacy-peer-deps
-          gem install cocoapods
-          cd ios && pod install && cd ..
+      - name: Install npm dependencies (with legacy peer deps)
+        run: npm install --legacy-peer-deps
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Check Podfile.lock exists
+        run: ls -l ios/Podfile.lock
+
+      - name: Install iOS Pods (respect Podfile.lock)
+        working-directory: ios
+        run: pod install
 
       - name: Recreate .env from secrets
         run: |
