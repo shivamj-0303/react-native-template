@@ -26,6 +26,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Install dependencies
+        run: yarn install
+
       - name: Build Dev APK
         run: ./gradlew assembleDevDebug
         working-directory: android
