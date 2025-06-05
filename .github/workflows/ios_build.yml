@@ -17,9 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
       - name: Setup Node & dependencies
         uses: actions/setup-node@v3
         with:
@@ -27,7 +24,7 @@ jobs:
 
       - name: Install npm & CocoaPods dependencies
         run: |
-          npm ci
+          npm install --legacy-peer-deps
           gem install cocoapods
           cd ios && pod install && cd ..
 
