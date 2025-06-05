@@ -31,6 +31,10 @@ jobs:
       - name: Check Podfile.lock exists
         run: ls -l ios/Podfile.lock
 
+      - name: Update DatadogCore Pod Only
+        working-directory: ios
+        run: pod update DatadogCore
+
       - name: Install iOS Pods (respect Podfile.lock)
         working-directory: ios
         run: pod install --repo-update
