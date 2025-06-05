@@ -1,57 +1,45 @@
-name: iOS Build with Updated .env
+name: iOS Build
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # You can manually trigger the build from GitHub Actions tab
   push:
-    branches: [main]
+    branches:
+      - main  # Or your default branch (change if needed)
 
 jobs:
   build-ios:
-    runs-on: macos-latest
-
-    env:
-      API_URL: ${{ secrets.API_URL }}
-      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+    runs-on: macos-14  # Use latest stable macOS runner
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node & dependencies
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22.13.1'
 
-      - name: Install npm dependencies (with legacy peer deps)
-        run: npm install --legacy-peer-deps
+      - name: Install Yarn
+        run: npm install -g yarn
 
-      - name: Install CocoaPods
-        run: gem install cocoapods
+      - name: Install dependencies
+        run: yarn install
 
-      - name: Check Podfile.lock exists
-        run: ls -l ios/Podfile.lock
+      - name: Remove Xcode Derived Data
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData
 
-      - name: Update DatadogCore Pod Only
-        working-directory: ios
-        run: pod update DatadogCore
-
-      - name: Install iOS Pods (respect Podfile.lock)
-        working-directory: ios
-        run: pod install --repo-update
-
-      - name: Recreate .env from secrets
+      - name: Clean Xcode build
         run: |
-          echo "API_URL=$API_URL" > .env
-          echo "AUTH_TOKEN=$AUTH_TOKEN" >> .env
-          cat .env
+          xcodebuild clean \
+            -workspace ios/YourApp.xcworkspace \
+            -scheme YourApp \
+            -configuration Release
 
-      - name: Clean cache (Xcode, Metro, Watchman)
+      - name: Build iOS app
         run: |
-          rm -rf ~/Library/Developer/Xcode/DerivedData
-          watchman watch-del-all || true
-          rm -rf /tmp/metro-* || true
-          cd ios && xcodebuild clean && cd ..
-
-      - name: Build iOS app (Release mode)
-        run: |
-          npx react-native run-ios --configuration Release --simulator="iPhone 15"
+          xcodebuild \
+            -workspace ios/YourApp.xcworkspace \
+            -scheme YourApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -allowProvisioningUpdates
