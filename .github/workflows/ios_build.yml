@@ -33,7 +33,7 @@ jobs:
 
       - name: Install iOS Pods (respect Podfile.lock)
         working-directory: ios
-        run: pod install
+        run: pod install --repo-update
 
       - name: Recreate .env from secrets
         run: |
