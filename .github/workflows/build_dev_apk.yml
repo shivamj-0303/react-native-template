@@ -21,7 +21,8 @@ jobs:
 
       - name: Write local.properties with build hash
         run: |
-          echo "BUILD_HASH=${{ github.event.pull_request.number }}" > android/local.properties
+          echo "BUILD_HASH=pr${{ github.event.pull_request.number }}" > android/local.properties
+
 
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
