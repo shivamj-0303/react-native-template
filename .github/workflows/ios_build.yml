@@ -1,0 +1,46 @@
+name: iOS Build with Updated .env
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    env:
+      API_URL: ${{ secrets.API_URL }}
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node & dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install npm & CocoaPods dependencies
+        run: |
+          npm ci
+          gem install cocoapods
+          cd ios && pod install && cd ..
+
+      - name: Recreate .env from secrets
+        run: |
+          echo "API_URL=$API_URL" > .env
+          echo "AUTH_TOKEN=$AUTH_TOKEN" >> .env
+          cat .env
+
+      - name: Clean cache (Xcode, Metro, Watchman)
+        run: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          watchman watch-del-all || true
+          rm -rf /tmp/metro-* || true
+          cd ios && xcodebuild clean && cd ..
+
+      - name: Build iOS app (Release mode)
+        run: |
+          npx react-native run-ios --configuration Release --simulator="iPhone 15"
