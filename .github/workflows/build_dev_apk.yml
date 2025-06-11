@@ -88,7 +88,7 @@ jobs:
         run: |
           awk '
           BEGIN { found=0 }
-          /spec.source/ { found=1; print "  spec.source = { :http => '\''https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz'\'', :sha256 => '\''0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5'\'' }"; next }
+          /spec.source/ { found=1; print "  spec.source = { :http => '\''https://archives.boost.io/release/1.76.0/source/boost_1_76_0.tar.gz'\'', :sha256 => '\''7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca'\'' }"; next }
           found && /^\s*:sha256/ { next }
           found && /\}/ { found=0; next }
           { print }
