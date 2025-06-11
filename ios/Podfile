@@ -16,7 +16,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-# ✅ Use Boost from GitHub (avoids checksum mismatch)
+# ✅ Define external boost source to avoid checksum mismatch
 $BoostSource = {
   :git => 'https://github.com/boostorg/boost.git',
   :tag => 'boost-1.76.0'
@@ -25,20 +25,20 @@ $BoostSource = {
 target 'Boilerplate' do
   config = use_native_modules!
 
-  # ✅ Explicitly use GitHub Boost
+  # ✅ Remove boost.podspec to avoid multiple sources conflict
+  File.delete('../node_modules/react-native/third-party-podspecs/boost.podspec') if File.exist?('../node_modules/react-native/third-party-podspecs/boost.podspec')
+
+  # ✅ Add boost from external source
   pod 'boost', $BoostSource
 
-  # ✅ Define flags before use
   flags = get_default_flags()
 
-  # ✅ Skip auto-loading of boost.podspec from node_modules
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
     :flipper_configuration => flipper_config,
-    :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # excludes boost.podspec
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   target 'BoilerplateTests' do
@@ -47,13 +47,12 @@ target 'Boilerplate' do
   end
 
   post_install do |installer|
-
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       end
 
-      # Workaround for Flipper missing include
+      # Patch Flipper include issue
       if target.name == 'Flipper'
         file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
         contents = File.read(file_path)
