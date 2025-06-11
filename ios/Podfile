@@ -28,6 +28,15 @@ $BoostSource = {
   :git => 'https://github.com/boostorg/boost.git',
   :tag => 'boost-1.76.0'
 }
+use_react_native!(
+  :path => config[:reactNativePath],
+  :hermes_enabled => true,
+  :fabric_enabled => false,
+  :flipper_configuration => flipper_config,
+  :codegen_config => codegen_config,
+  :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # REMOVE boost.podspec
+)
+
 target 'Boilerplate' do
   config = use_native_modules!
   pod 'boost', $BoostSource
