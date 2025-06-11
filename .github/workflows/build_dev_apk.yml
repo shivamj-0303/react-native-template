@@ -82,7 +82,10 @@ jobs:
           cd ios
           gem install bundler
           bundle install
-
+      - name: Debug podspec path
+        run: |
+          ls -la node_modules/react-native/third-party-podspecs
+          
       - name: Clean and Reinstall Pods
         working-directory: ios
         run: |
@@ -90,11 +93,15 @@ jobs:
           rm -rf Pods
           rm -f Podfile.lock
           pod deintegrate
-          # Patch Flipper Boost Podspec
           PODSPEC_PATH="../node_modules/react-native/third-party-podspecs/Flipper-Boost-iOSX.podspec"
-          sed -i.bak "s|https://dl.bintray.com/boostorg/release/1.76.0/source/boost_1_76_0.tar.gz|https://github.com/boostorg/boost/archive/refs/tags/boost-1.76.0.tar.gz|" "$PODSPEC_PATH"
-          sed -i.bak "/checksum/d" "$PODSPEC_PATH"
-          echo "Patched patch spec: $PODSPEC_PATH"
+          if [ -f "$PODSPEC_PATH" ]; then
+            sed -i.bak "s|https://dl.bintray.com/boostorg/release/1.76.0/source/boost_1_76_0.tar.gz|https://github.com/boostorg/boost/archive/refs/tags/boost-1.76.0.tar.gz|" "$PODSPEC_PATH"
+            sed -i.bak "/checksum/d" "$PODSPEC_PATH"
+            echo "✅ Patched Flipper Boost podspec"
+          else
+              echo "❌ Podspec not found: $PODSPEC_PATH"
+              exit 1
+          fi
           pod install --repo-update --clean-instal
 
       - name: Build Production IPA
