@@ -87,7 +87,9 @@ jobs:
         working-directory: ios
         run: |
           pod cache clean --all
-          pod install --clean-install
+          rm -rf Pods
+          pod deintegrate
+          pod install --deployment
 
 
       - name: Build Production IPA
