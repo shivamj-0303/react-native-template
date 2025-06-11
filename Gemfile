@@ -5,3 +5,4 @@ ruby ">= 2.6.10"
 
 gem 'cocoapods', '~> 1.12'
 gem 'concurrent-ruby', '1.3.4'
+gem 'fastlane'
