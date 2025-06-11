@@ -86,6 +86,7 @@ jobs:
       - name: Clean and Install Pods
         working-directory: ios
         run: |
+          pod cache clean --all
           rm -rf Pods
           rm -rf ~/Library/Caches/CocoaPods
           rm -rf ~/Library/Caches/org.cocoapods.Pod
