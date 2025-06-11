@@ -8,15 +8,6 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -37,14 +28,17 @@ target 'Boilerplate' do
   # ✅ Explicitly use GitHub Boost
   pod 'boost', $BoostSource
 
-  # ✅ Disable auto-loading boost.podspec from node_modules
+  # ✅ Define flags before use
+  flags = get_default_flags()
+
+  # ✅ Skip auto-loading of boost.podspec from node_modules
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
     :flipper_configuration => flipper_config,
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # ✅ manually excluding boost.podspec
+    :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # excludes boost.podspec
   )
 
   target 'BoilerplateTests' do
@@ -58,6 +52,7 @@ target 'Boilerplate' do
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       end
+
       # Workaround for Flipper missing include
       if target.name == 'Flipper'
         file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
