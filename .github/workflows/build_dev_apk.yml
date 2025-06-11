@@ -78,31 +78,19 @@ jobs:
         run: yarn install
 
       - name: Install CocoaPods
+        working-directory: ios
         run: |
-          cd ios
           gem install bundler
           bundle install
-      - name: Debug podspec path
-        run: |
-          ls -la node_modules/react-native/third-party-podspecs
-          
-      - name: Clean and Reinstall Pods
+
+      - name: Clean and Install Pods
         working-directory: ios
         run: |
           pod cache clean --all
           rm -rf Pods
           rm -f Podfile.lock
           pod deintegrate
-          PODSPEC_PATH="../node_modules/react-native/third-party-podspecs/Flipper-Boost-iOSX.podspec"
-          if [ -f "$PODSPEC_PATH" ]; then
-            sed -i.bak "s|https://dl.bintray.com/boostorg/release/1.76.0/source/boost_1_76_0.tar.gz|https://github.com/boostorg/boost/archive/refs/tags/boost-1.76.0.tar.gz|" "$PODSPEC_PATH"
-            sed -i.bak "/checksum/d" "$PODSPEC_PATH"
-            echo "✅ Patched Flipper Boost podspec"
-          else
-              echo "❌ Podspec not found: $PODSPEC_PATH"
-              exit 1
-          fi
-          pod install --repo-update --clean-instal
+          pod install --repo-update
 
       - name: Build Production IPA
         run: |
