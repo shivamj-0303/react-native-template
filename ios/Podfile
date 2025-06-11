@@ -24,38 +24,27 @@ if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
 end
+
+# ✅ Use Boost from GitHub (avoids checksum mismatch)
 $BoostSource = {
   :git => 'https://github.com/boostorg/boost.git',
   :tag => 'boost-1.76.0'
 }
-use_react_native!(
-  :path => config[:reactNativePath],
-  :hermes_enabled => true,
-  :fabric_enabled => false,
-  :flipper_configuration => flipper_config,
-  :codegen_config => codegen_config,
-  :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # REMOVE boost.podspec
-)
 
 target 'Boilerplate' do
   config = use_native_modules!
+
+  # ✅ Explicitly use GitHub Boost
   pod 'boost', $BoostSource
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
+  # ✅ Disable auto-loading boost.podspec from node_modules
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
     :flipper_configuration => flipper_config,
-    # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :podspecs => ['DoubleConversion.podspec', 'glog.podspec', 'RCT-Folly.podspec'] # ✅ manually excluding boost.podspec
   )
 
   target 'BoilerplateTests' do
@@ -69,8 +58,7 @@ target 'Boilerplate' do
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       end
-      # This is a workaround for an issue causing iOS builds to fail due to missing include in Flipper.
-      # For more details, see: https://github.com/facebook/react-native/issues/43335#issuecomment-1980788427
+      # Workaround for Flipper missing include
       if target.name == 'Flipper'
         file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
         contents = File.read(file_path)
@@ -83,7 +71,6 @@ target 'Boilerplate' do
       end
     end
 
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
