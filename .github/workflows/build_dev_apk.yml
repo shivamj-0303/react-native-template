@@ -83,11 +83,17 @@ jobs:
           gem install bundler
           bundle install
     
-      - name: Patch Boost Podspec URL and Checksum
+      - name: Patch Boost Podspec with Custom Source
         working-directory: node_modules/react-native/third-party-podspecs
         run: |
-          sed -i.bak "s|spec.source = {.*}|spec.source = { :http => 'https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz', :sha256 => '0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5' }|" boost.podspec
-
+          awk '
+          BEGIN { found=0 }
+          /spec.source/ { found=1; print "  spec.source = { :http => '\''https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz'\'', :sha256 => '\''0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5'\'' }"; next }
+          found && /^\s*:sha256/ { next }
+          found && /\}/ { found=0; next }
+          { print }
+          ' boost.podspec > boost.podspec.tmp && mv boost.podspec.tmp boost.podspec
+          
       - name: Debug Boost Podspec
         working-directory: node_modules/react-native/third-party-podspecs
         run: |
