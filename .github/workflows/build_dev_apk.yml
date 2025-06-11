@@ -87,12 +87,7 @@ jobs:
         working-directory: ios
         run: |
           pod cache clean --all
-          rm -rf Pods
-          rm -f Podfile.lock
-          rm -rf ~/Library/Caches/CocoaPods # Clear Pods cache
-          rm -rf ~/.cocoapods/repos/trunk   # Clear the spec-repo
-          pod repo update
-          pod install --repo-update --clean-install
+          pod install --clean-install
 
 
       - name: Build Production IPA
