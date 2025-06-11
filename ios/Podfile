@@ -24,9 +24,13 @@ if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
 end
-
+$BoostSource = {
+  :git => 'https://github.com/boostorg/boost.git',
+  :tag => 'boost-1.76.0'
+}
 target 'Boilerplate' do
   config = use_native_modules!
+  pod 'boost', $BoostSource
 
   # Flags change depending on the env values.
   flags = get_default_flags()
