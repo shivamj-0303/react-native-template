@@ -83,11 +83,11 @@ jobs:
           gem install bundler
           bundle install
 
-      - name: Patch Boost Podspec URL and Checksum
+      - name: Patch Boost Podspec to Fix URL and Checksum
         working-directory: node_modules/react-native/third-party-podspecs
         run: |
-          sed -i.bak 's|https://boostorg.jfrog.io.*|https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz|g' boost.podspec
-          sed -i '' 's|f0397ba6e982c4450f27bf32a2a83292aba035b827a5623a14636ea583318c41|0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5|g' boost.podspec
+          sed -i 's|https://.*boost_1_76_0.tar.gz|https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz|g' boost.podspec
+          sed -i 's|[a-f0-9]\{64\}|0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5|g' boost.podspec
 
       - name: Clean and Reinstall Pods with Repo Update
         working-directory: ios
