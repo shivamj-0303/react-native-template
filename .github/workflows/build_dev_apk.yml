@@ -82,11 +82,22 @@ jobs:
         run: |
           gem install bundler
           bundle install
-
+    
       - name: Patch Boost Podspec URL and Checksum
         working-directory: node_modules/react-native/third-party-podspecs
         run: |
           sed -i.bak "s|spec.source = {.*}|spec.source = { :http => 'https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz', :sha256 => '0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5' }|" boost.podspec
+
+      - name: Debug Boost Podspec
+        working-directory: node_modules/react-native/third-party-podspecs
+        run: |
+          echo "=== boost.podspec content ==="
+          cat boost.podspec
+
+      - name: Test Boost Archive Manually
+        run: |
+          curl -L -o boost.tar.gz https://github.com/boostorg/boost/releases/download/boost-1.76.0/boost-1.76.0.tar.gz
+          shasum -a 256 boost.tar.gz
 
 
       - name: Clean and Reinstall Pods with Repo Update
