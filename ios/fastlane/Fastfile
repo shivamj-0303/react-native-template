@@ -1,0 +1,20 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build iOS app with clean environment"
+  lane :ci_build do
+    # Clean Xcode cache (acts like deleting DerivedData)
+    sh("rm -rf ~/Library/Developer/Xcode/DerivedData")
+
+    # Set ENVFILE if using react-native-config
+    ENV["ENVFILE"] = ".env.pr_preview" # or whatever you need
+
+    build_app(
+      scheme: "YourAppScheme", # Update this with your actual scheme name
+      clean: true,
+      export_method: "ad-hoc", # or "development" depending on certs
+      output_directory: "./build", # So you can upload this later
+      output_name: "AppPreview.ipa"
+    )
+  end
+end

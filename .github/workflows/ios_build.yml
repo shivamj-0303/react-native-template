@@ -1,45 +1,55 @@
-name: iOS Build
+name: Build iOS App (Preview)
 
 on:
-  workflow_dispatch:  # You can manually trigger the build from GitHub Actions tab
-  push:
-    branches:
-      - main  # Or your default branch (change if needed)
+  workflow_dispatch:  # Manual trigger
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-ios:
-    runs-on: macos-14  # Use latest stable macOS runner
+  ios-preview-build:
+    name: Build iOS App with Clean .env
+    runs-on: macos-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: '22.13.1'
+          ruby-version: '3.1'
 
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Install Fastlane
+        run: sudo gem install fastlane -NV
 
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Remove Xcode Derived Data
+      - name: Remove Derived Data
         run: rm -rf ~/Library/Developer/Xcode/DerivedData
 
-      - name: Clean Xcode build
-        run: |
-          xcodebuild clean \
-            -workspace ios/YourApp.xcworkspace \
-            -scheme YourApp \
-            -configuration Release
+      - name: Set up Node & Install Dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-      - name: Build iOS app
+      - name: Install NPM Packages
+        run: npm ci
+
+      - name: Install iOS Pods
+        working-directory: ios
+        run: pod install
+
+      - name: Build IPA with Clean Env
+        working-directory: ios
         run: |
-          xcodebuild \
-            -workspace ios/YourApp.xcworkspace \
-            -scheme YourApp \
-            -configuration Release \
-            -sdk iphoneos \
-            -allowProvisioningUpdates
+          export ENVFILE=.env.pr_preview
+          fastlane run build_app \
+            scheme:"YourAppScheme" \
+            clean:true \
+            export_method:"ad-hoc" \
+            output_directory:"./build" \
+            output_name:"AppPreview.ipa"
+
+      - name: Upload IPA as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS Preview App
+          path: ios/build/AppPreview.ipa
